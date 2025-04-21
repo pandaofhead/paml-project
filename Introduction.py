@@ -26,7 +26,7 @@ with col1:
 
 with col2:
     image = Image.open("assets/kate-stone-matheson-uy5t-CJuIK4-unsplash.jpg")
-    st.image(image, use_container_width=True, caption="© Kate Stone Matheson on Unsplash")
+    st.image(image, caption="© Kate Stone Matheson on Unsplash")
 
 st.markdown("### Dataset Introduction")
 st.markdown("""
