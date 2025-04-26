@@ -4,29 +4,85 @@ import pandas as pd
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.compose import ColumnTransformer
 
-st.title('Deploy Application')
+# Define L1 Linear Regression class
+class L1LinearRegression:
+    def __init__(self, learning_rate=0.01, n_iterations=1000, lambda_param=0.1):
+        self.learning_rate = learning_rate
+        self.n_iterations = n_iterations
+        self.lambda_param = lambda_param
+        self.weights = None
+        self.bias = None
 
-# Check if trained model and required information exist
-model = st.session_state.get('l2_model', None)
-feature_names = st.session_state.get('feature_names', None)
+    def fit(self, X, y):
+        n_samples, n_features = X.shape
+        self.weights = np.zeros(n_features)
+        self.bias = 0
+        for _ in range(self.n_iterations):
+            y_pred = np.dot(X, self.weights) + self.bias
+            dw = (1 / n_samples) * np.dot(X.T, (y_pred - y))
+            db = (1 / n_samples) * np.sum(y_pred - y)
+            dw += (self.lambda_param / n_samples) * np.sign(self.weights)
+            self.weights -= self.learning_rate * dw
+            self.bias -= self.learning_rate * db
 
-# Check if model and data are ready
-if model is None or feature_names is None:
-    st.warning('‼️ The Sleep Health Application is under construction. Please train the model first.')
+    def predict(self, X):
+        return np.dot(X, self.weights) + self.bias
+
+# Streamlit Page Setup
+st.title('Sleep Quality Prediction App')
+
+# Check if data exists
+if 'preprocessed_data' not in st.session_state:
+    st.warning('‼️ Preprocessed data not found. Please go to Explore & Preprocess page first.')
     st.stop()
 
-# Check if trained with correct target
-if st.session_state['target_column'] != 'Stress Level':
-    st.warning("‼️ The model was not trained with 'Stress Level' as target. Please retrain.")
+if 'scaler_means' not in st.session_state or 'scaler_stds' not in st.session_state:
+    st.warning('‼️ Please go to Train & Evaluate page to train the model with Quality of Sleep first.')
     st.stop()
 
-# Deploy App
-st.markdown('### Sleep Stress Level Prediction')
+# Train L1 model if not yet trained
+if 'l1_model' not in st.session_state or 'feature_names' not in st.session_state or 'preprocessor' not in st.session_state:
+    df = st.session_state['preprocessed_data']
 
-st.markdown('#### Provide your information below to predict your stress level:')
+    target_column = 'Quality of Sleep'
+    X = df.drop(columns=[target_column])
+    y = df[target_column]
 
-# User input form
-with st.form("stress_prediction_form"):
+    numeric_features = X.select_dtypes(include=["int64", "float64"]).columns.tolist()
+    categorical_features = X.select_dtypes(include=["object"]).columns.tolist()
+
+    preprocessor = ColumnTransformer([
+        ("num", StandardScaler(), numeric_features),
+        ("cat", OneHotEncoder(drop="first", sparse=False), categorical_features)
+    ])
+
+    X_transformed = preprocessor.fit_transform(X)
+
+    # Prepare feature names
+    numeric_feature_names = numeric_features
+    categorical_feature_names = []
+    for feature in categorical_features:
+        categories = df[feature].dropna().unique()[1:]
+        categorical_feature_names.extend([f"{feature}_{cat}" for cat in categories])
+
+    all_feature_names = numeric_feature_names + categorical_feature_names
+
+    l1_model = L1LinearRegression(learning_rate=0.01, n_iterations=1000, lambda_param=0.1)
+    l1_model.fit(X_transformed, y)
+
+    # Save to session_state
+    st.session_state['l1_model'] = l1_model
+    st.session_state['feature_names'] = all_feature_names
+    st.session_state['preprocessor'] = preprocessor
+
+# Load model and preprocessor
+model = st.session_state['l1_model']
+feature_names = st.session_state['feature_names']
+preprocessor = st.session_state['preprocessor']
+
+# User Input Form
+st.markdown('### Provide your information below to predict your Sleep Quality:')
+with st.form("sleep_quality_form"):
     col1, col2 = st.columns(2)
     with col1:
         age = st.number_input("Age", min_value=18, max_value=80, value=27)
@@ -41,14 +97,14 @@ with st.form("stress_prediction_form"):
         physical_activity = st.number_input("Physical Activity Level (%)", min_value=0.0, max_value=100.0, value=42.0)
 
     with col2:
-        quality_of_sleep = st.slider("Quality of Sleep", min_value=1, max_value=10, value=6)
+        stress_level = st.slider("Stress Level", min_value=1, max_value=10, value=6)
         heart_rate = st.number_input("Heart Rate (bpm)", min_value=40, max_value=150, value=77)
         daily_steps = st.number_input("Daily Steps", min_value=0, max_value=30000, value=4200)
         systolic_bp = st.number_input("Systolic BP", min_value=90, max_value=200, value=126)
         diastolic_bp = st.number_input("Diastolic BP", min_value=50, max_value=120, value=83)
         sleep_disorder = st.selectbox("Sleep Disorder", ["None", "Sleep Apnea", "Insomnia"], index=0)
 
-    submit_button = st.form_submit_button("Predict Stress Level")
+    submit_button = st.form_submit_button("Predict Sleep Quality")
 
 if submit_button:
     # Build input DataFrame
@@ -58,8 +114,8 @@ if submit_button:
         'BMI Category': [bmi_category],
         'Occupation': [occupation],
         'Sleep Duration': [sleep_duration],
-        'Quality of Sleep': [quality_of_sleep],
         'Physical Activity Level': [physical_activity],
+        'Stress Level': [stress_level],
         'Heart Rate': [heart_rate],
         'Daily Steps': [daily_steps],
         'Systolic_BP': [systolic_bp],
@@ -68,57 +124,33 @@ if submit_button:
     })
 
     # Feature Engineering
-    user_input['Sleep Efficiency'] = quality_of_sleep / (sleep_duration + 1e-5)  # Assume 8 hours as baseline for Sleep Efficiency
     df = st.session_state['preprocessed_data']
-    user_input['Stress_Activity_Ratio'] = 0
+    user_input['Sleep Efficiency'] = df['Sleep Efficiency'].median()
+    user_input['Stress_Activity_Ratio'] = stress_level / (physical_activity + 1e-5)
 
     # Identify numeric and categorical features
     numeric_features = user_input.select_dtypes(include=["int64", "float64"]).columns.tolist()
     categorical_features = user_input.select_dtypes(include=["object"]).columns.tolist()
 
-    # Build Preprocessor
-    numeric_transformer = StandardScaler()
-    categorical_transformer = OneHotEncoder(drop="first", sparse_output=False)
+    # Encoding
+    user_input_encoded = pd.get_dummies(user_input, columns=categorical_features, drop_first=True)
 
-    preprocessor = ColumnTransformer(
-        transformers=[
-            ("num", numeric_transformer, numeric_features),
-            ("cat", categorical_transformer, categorical_features),
-        ]
-    )
-
-    # Fit and transform (demo purpose)
-    user_input_processed = preprocessor.fit_transform(user_input)
-
-    # Create processed feature names
-    processed_feature_names = (
-        preprocessor.named_transformers_["num"].get_feature_names_out(numeric_features).tolist()
-        + preprocessor.named_transformers_["cat"].get_feature_names_out(categorical_features).tolist()
-    )
-
-    # Create DataFrame
-    user_input_final = pd.DataFrame(user_input_processed, columns=processed_feature_names)
-
-    # Ensure all expected features exist
     for feature in feature_names:
-        if feature not in user_input_final.columns:
-            user_input_final[feature] = 0
+        if feature not in user_input_encoded.columns:
+            user_input_encoded[feature] = 0
 
-    # Reorder columns
-    user_input_final = user_input_final[feature_names]
+    user_input_final = user_input_encoded[feature_names]
+
+    for col in user_input_final.columns:
+        if col in st.session_state['scaler_means']:
+            mean = st.session_state['scaler_means'][col]
+            std = st.session_state['scaler_stds'][col]
+            if std > 0:
+                user_input_final[col] = (user_input_final[col] - mean) / std
 
     # Predict
-    predicted_stress_level = model.predict(user_input_final.values)[0]
-    predicted_stress_level *= 10
+    predicted_sleep_quality = model.predict(user_input_final.values)[0]
 
-    # Output result
-    st.markdown("### 🧠 Predicted Stress Level")
-    st.metric("Stress Level (0-10 Scale)", f"{predicted_stress_level:.2f}")
-
-    st.markdown("#### Personalized Suggestion")
-    if predicted_stress_level < 4:
-        st.success("Low Stress: Keep up the good lifestyle habits!")
-    elif 4 <= predicted_stress_level < 7:
-        st.info("Moderate Stress: Consider better relaxation and sleep practices.")
-    else:
-        st.warning("High Stress: Please prioritize your mental and physical well-being.")
+    # Output Result
+    st.markdown("### 🌙 Predicted Sleep Quality")
+    st.metric("Quality of Sleep", f"{predicted_sleep_quality:.2f}")
