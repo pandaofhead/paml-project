@@ -88,6 +88,7 @@ def main():
     st.dataframe(df.head())
 
     target_column = st.selectbox("Select target variable", df.columns, index=df.columns.get_loc("Stress Level") if "Stress Level" in df.columns else 0)
+    st.session_state['target_column'] = target_column
 
     X = df.drop(columns=[target_column])
     y = df[target_column]
