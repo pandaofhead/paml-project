@@ -25,7 +25,7 @@ if df_raw is not None:
         st.dataframe(df_raw.head())
 
         st.markdown("### Summary Statistics")
-        st.dataframe(df_raw.describe(include='all'))
+        st.dataframe(df_raw.describe())
 
         st.markdown("## 📊 Visualization")
         st.info("Note: All visualizations below are based on the original raw dataset (not preprocessed).")
@@ -64,7 +64,7 @@ if df_raw is not None:
             st.pyplot(fig)
 
         elif visual_option == "Boxplot: Sleep Quality vs. Occupation":
-            fig, ax = plt.subplots(figsize=(12, 6))
+            fig, ax = plt.subplots()
             sns.boxplot(x='Occupation', y='Quality of Sleep', data=df_raw, hue='Occupation', ax=ax)
             ax.set_title("Sleep Quality versus Occupation")
             ax.set_xlabel("Occupation")
@@ -103,6 +103,13 @@ if df_raw is not None:
         st.subheader("Drop Unused Columns")
         df.drop(columns=['Person ID', 'Blood Pressure'], inplace=True, errors='ignore')
         st.success("Dropped 'Person ID' and original 'Blood Pressure' columns.")
+
+        # st.subheader("One-Hot Encoding for Categorical Column")
+        # df['Sleep Disorder'] = df['Sleep Disorder'].fillna('None')
+        # categorical_cols = ['Gender', 'Occupation', 'BMI Category', 'Sleep Disorder']
+        # st.write(f"Encoding: {categorical_cols}")
+        # df = pd.get_dummies(df, columns=categorical_cols, drop_first=True, dtype=int)
+        # st.success("Categorical features encoded using one-hot encoding.")
 
         st.subheader("One-Hot Encoding for Categorical Column")
         categorical_cols = ['Gender', 'Occupation', 'BMI Category']
@@ -160,4 +167,3 @@ if df_raw is not None:
 
 else:
     st.warning("‼️ Please download the dataset from [Kaggle](https://www.kaggle.com/datasets/uom190346a/sleep-health-and-lifestyle-dataset) and upload it to proceed.")
-
