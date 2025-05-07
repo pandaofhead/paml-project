@@ -76,7 +76,7 @@ def evaluate_model(y_true, y_pred):
     return mae, rmse, r2
 
 def main():
-    st.title("Train and Evaluate")
+    st.title("Train and Evaluate Model")
     
     if 'preprocessed_data' not in st.session_state:
         st.warning("‼️ Preprocessed data not found. Please go to Explore & Preprocess page first.")
