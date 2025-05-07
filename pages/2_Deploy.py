@@ -42,7 +42,7 @@ if 'scaler_means' not in st.session_state or 'scaler_stds' not in st.session_sta
 
 # Check if trained properly
 if 'target_column' not in st.session_state or st.session_state['target_column'] != 'Quality of Sleep':
-    st.error("⚠️ The model has not been trained with \"Quality of Sleep\" as the target variable. Please go to Train & Evaluate page to train the model with \"Quality of Sleep\".")
+    st.error("⚠️ Current model is not trained with \"Quality of Sleep\" as the target variable. Please go to Train & Evaluate page to train the model with \"Quality of Sleep\".")
     st.stop()
 
 # Train L1 model if not yet trained
