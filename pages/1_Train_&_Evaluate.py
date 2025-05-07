@@ -84,7 +84,7 @@ def main():
 
     df = st.session_state['preprocessed_data']
 
-    st.header("Dataset Overview:")
+    st.header("Dataset Overview")
     st.dataframe(df.head())
 
     target_column = st.selectbox("Select target variable", df.columns, index=df.columns.get_loc("Quality of Sleep") if "Quality of Sleep" in df.columns else 0)
@@ -141,10 +141,12 @@ def main():
 
         st.success("Both L1 and L2 models trained successfully!")
 
+        st.header("Model Evaluation")
+
         col1, col2 = st.columns(2)
 
         for model, model_name, container in zip([l1_model, l2_model], ["L1 (Lasso)", "L2 (Ridge)"], [col1, col2]):
-            container.header(f"Feature Importance - {model_name}")
+            container.markdown(f"### Feature Importance - {model_name}")
             feature_importance = pd.DataFrame({"Feature": all_feature_names, "Coefficient": np.abs(model.weights)})
             feature_importance = feature_importance.sort_values("Coefficient", ascending=False)
 
@@ -161,28 +163,28 @@ def main():
             val_metrics = evaluate_model(y_val, y_val_pred)
             test_metrics = evaluate_model(y_test, y_test_pred)
 
-            container.header(f"Model Performance - {model_name}")
+            container.markdown(f"### Model Performance - {model_name}")
             c1, c2, c3 = container.columns(3)
 
             with c1:
-                container.subheader("Training Set")
+                container.markdown("<h4 style='color:red;'>Training Set</h4>", unsafe_allow_html=True)
                 container.metric("MAE", f"{train_metrics[0]:.4f}")
                 container.metric("RMSE", f"{train_metrics[1]:.4f}")
                 container.metric("R²", f"{train_metrics[2]:.4f}")
 
             with c2:
-                container.subheader("Validation Set")
+                container.markdown("<h4 style='color:red;'>Validation Set</h4>", unsafe_allow_html=True)
                 container.metric("MAE", f"{val_metrics[0]:.4f}")
                 container.metric("RMSE", f"{val_metrics[1]:.4f}")
                 container.metric("R²", f"{val_metrics[2]:.4f}")
 
             with c3:
-                container.subheader("Test Set")
+                container.markdown("<h4 style='color:red;'>Test Set</h4>", unsafe_allow_html=True)
                 container.metric("MAE", f"{test_metrics[0]:.4f}")
                 container.metric("RMSE", f"{test_metrics[1]:.4f}")
                 container.metric("R²", f"{test_metrics[2]:.4f}")
 
-            container.header(f"Actual vs Predicted Values - {model_name}")
+            container.markdown(f"### Actual vs Predicted Values - {model_name}")
             fig, ax = plt.subplots(figsize=(8, 5))
             ax.scatter(y_test, y_test_pred, alpha=0.5)
             ax.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], "r--", lw=2)
@@ -190,7 +192,7 @@ def main():
             ax.set_ylabel("Predicted Values")
             container.pyplot(fig)
 
-            container.header(f"Model Coefficients - {model_name}")
+            container.markdown(f"### Model Coefficients - {model_name}")
             coefficients = pd.DataFrame({"Feature": all_feature_names, "Coefficient": model.weights})
             coefficients = coefficients.sort_values("Coefficient", ascending=False)
             container.dataframe(coefficients)

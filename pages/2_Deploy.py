@@ -29,7 +29,7 @@ class L1LinearRegression:
         return np.dot(X, self.weights) + self.bias
 
 # Streamlit Page Setup
-st.title('Sleep Quality Prediction App')
+st.title('Sleep Health and Lifestyle Insights')
 
 # Check if data exists
 if 'preprocessed_data' not in st.session_state:

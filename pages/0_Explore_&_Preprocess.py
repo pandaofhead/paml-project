@@ -15,11 +15,11 @@ st.title("Sleep Health and Lifestyle Dataset")
 df_raw = fetch_dataset()
 
 if df_raw is not None:
-    st.sidebar.title("🔎 Explore & Preprocess")
-    section = st.sidebar.radio("Select Section", ["🧭 Explore Dataset", "🧰 Preprocessing"])
+    st.sidebar.title("Explore & Preprocess")
+    section = st.sidebar.radio("Select Section", ["Explore Dataset", "Preprocessing"])
 
-    if section == "🧭 Explore Dataset":
-        st.markdown("## 🗂️ Dataset Overview")
+    if section == "Explore Dataset":
+        st.markdown("## Dataset Overview")
 
         st.markdown("### Dataset Preview")
         st.dataframe(df_raw.head())
@@ -27,7 +27,7 @@ if df_raw is not None:
         st.markdown("### Summary Statistics")
         st.dataframe(df_raw.describe())
 
-        st.markdown("## 📊 Visualization")
+        st.markdown("## Visualization")
         st.info("Note: All visualizations below are based on the original raw dataset (not preprocessed).")
 
         visual_option = st.radio("Select a Visualization", [
@@ -86,8 +86,8 @@ if df_raw is not None:
             ax.set_title("Correlation Heatmap of Numerical Features")
             st.pyplot(fig)
 
-    elif section == "🧰 Preprocessing":
-        st.markdown("## 🛠 Data Preprocessing")
+    elif section == "Preprocessing":
+        st.markdown("## Data Preprocessing")
         df = df_raw.copy()
 
         st.subheader("Split Blood Pressure into Systolic and Diastolic")

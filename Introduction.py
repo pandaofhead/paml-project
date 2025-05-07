@@ -4,7 +4,7 @@ from PIL import Image
 # Page Setup
 st.set_page_config(page_title="Sleep Health and Lifestyle", layout="wide")
 st.title("Welcome to Sleep Health and Lifestyle Insights")
-st.markdown("### Project Overview")
+st.markdown("## Project Overview")
 
 # Two-column layout
 col1, col2 = st.columns([2, 1])
@@ -15,7 +15,7 @@ with col1:
     This project aims to address the lack of personalized, data-driven insights into sleep health.
 
     Our goal is to develop an interactive system that predicts sleep quality using health and lifestyle data. 
-    We implement custom machine learning models — particularly L1 and L2 regularized linear regression — to estimate sleep quality scores based on user input.
+    We implement custom machine learning models — L1 and L2 regularized linear regression — to estimate sleep quality scores based on user input.
 
     The web application includes:
     - Interactive data exploration and preprocessing
@@ -28,7 +28,7 @@ with col2:
     image = Image.open("assets/kate-stone-matheson-uy5t-CJuIK4-unsplash.jpg")
     st.image(image, caption="© Kate Stone Matheson on Unsplash")
 
-st.markdown("### Dataset Introduction")
+st.markdown("## Dataset Introduction")
 st.markdown("""
     The **Sleep Health and Lifestyle Dataset** from Kaggle contains 400 entries and 13 features,
     covering sleep duration, sleep quality, physical activity, stress levels, BMI categories, blood pressure,
@@ -42,7 +42,7 @@ st.markdown("""
 
 st.markdown("""
     ---
-    #### 👇 Ready to begin?
+    ### 👇 Ready to begin?
     Click the button below to explore the dataset.
     """)
 
