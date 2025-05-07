@@ -7,8 +7,8 @@ This Streamlit application analyzes sleep health data and predicts sleep quality
 - `Introduction.py`: Main entry point for the Streamlit application
 - `pages/`: Directory containing the application pages
   - `0_Explore_&_Preprocess.py`: Data exploration and preprocessing
-  - `1_Train_Model.py`: Model training with hyperparameter tuning
-  - `2_Test_Model.py`: Model evaluation and visualization
+  - `1_Train_&_Evaluate.py`: Model training with hyperparameter tuning and evaluation
+  - `2_Deploy.py`: Model deployment and sleep quality prediction
 - `helper_functions.py`: Utility functions for the application
 - `Sleep_health_and_lifestyle_dataset.csv`: Original dataset
 - `Preprocessed_Sleep_Health_Dataset.xlsx`: Preprocessed dataset
@@ -31,6 +31,10 @@ This Streamlit application analyzes sleep health data and predicts sleep quality
   - Performance metrics: MAE, RMSE, and R²
   - Visualization of actual vs. predicted values
   - Feature importance analysis
+
+- **Model Deployment**:
+  - Interactive form for entering personal lifestyle and health information
+  - Prediction of sleep quality using the trained regression model
 
 ## Installation
 
@@ -55,8 +59,8 @@ streamlit run Introduction.py
 2. Navigate through the application:
    - Start with the Introduction page to understand the project
    - Go to "Explore & Preprocess" to analyze and preprocess the dataset
-   - Train models in the "Train Model" page
-   - Evaluate models in the "Test Model" page
+   - Train and evaluate models in the "Train & Evaluate" page
+   - Use the "Deploy" page to input personal data and receive a sleep quality prediction
 
 ## Dataset
 
