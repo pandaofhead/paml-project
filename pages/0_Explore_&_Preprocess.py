@@ -9,7 +9,7 @@ from helper_functions import fetch_dataset
 
 # Page Setup
 st.set_page_config(page_title="Sleep Health and Lifestyle", layout="wide")
-st.title("Explore and Preprocess Dataset")
+st.title("Explore and Preprocess Data")
 
 # Load Dataset
 df_raw = fetch_dataset()
