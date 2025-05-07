@@ -37,7 +37,12 @@ if 'preprocessed_data' not in st.session_state:
     st.stop()
 
 if 'scaler_means' not in st.session_state or 'scaler_stds' not in st.session_state:
-    st.warning('‼️ Please go to Train & Evaluate page to train the model with Quality of Sleep first.')
+    st.warning('‼️ Trained model not found. Please go to Train & Evaluate page to train the model with \"Quality of Sleep\" first.')
+    st.stop()
+
+# Check if trained properly
+if 'target_column' not in st.session_state or st.session_state['target_column'] != 'Quality of Sleep':
+    st.error("⚠️ The model has not been trained with \"Quality of Sleep\" as the target variable. Please go to Train & Evaluate page to train the model with \"Quality of Sleep\".")
     st.stop()
 
 # Train L1 model if not yet trained
