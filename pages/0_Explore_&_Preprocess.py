@@ -104,15 +104,9 @@ if df_raw is not None:
         df.drop(columns=['Person ID', 'Blood Pressure'], inplace=True, errors='ignore')
         st.success("Dropped 'Person ID' and original 'Blood Pressure' columns.")
 
-        # st.subheader("One-Hot Encoding for Categorical Column")
-        # df['Sleep Disorder'] = df['Sleep Disorder'].fillna('None')
-        # categorical_cols = ['Gender', 'Occupation', 'BMI Category', 'Sleep Disorder']
-        # st.write(f"Encoding: {categorical_cols}")
-        # df = pd.get_dummies(df, columns=categorical_cols, drop_first=True, dtype=int)
-        # st.success("Categorical features encoded using one-hot encoding.")
-
         st.subheader("One-Hot Encoding for Categorical Column")
-        categorical_cols = ['Gender', 'Occupation', 'BMI Category']
+        df['Sleep Disorder'] = df['Sleep Disorder'].fillna('None')
+        categorical_cols = ['Gender', 'Occupation', 'BMI Category', 'Sleep Disorder']
         st.write(f"Encoding: {categorical_cols}")
         df = pd.get_dummies(df, columns=categorical_cols, drop_first=True, dtype=int)
         st.success("Categorical features encoded using one-hot encoding.")
